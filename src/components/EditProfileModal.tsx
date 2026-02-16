@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, useAuth } from '../context/AuthContext';
 import { compressImage } from '../utils/imageCompression';
+import { API_URL } from '../utils/api';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -29,7 +30,6 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
-  const API_URL = (import.meta as any).env.VITE_API_URL;
   const { refresh } = useAuth();
 
   // Auto focus name field
@@ -84,8 +84,16 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !handle.trim()) {
-      setError('Name and username are required');
+    const originalHandle = user.handle.replace('@', '');
+    const isHandleUnchanged = handle === originalHandle;
+    const isHandleLengthValid = handle.trim().length >= 3;
+
+    if (!name.trim() || (!isHandleUnchanged && !isHandleLengthValid)) {
+      setError('Name is required and new username must be at least 3 characters');
+      return;
+    }
+    if (handle.trim().length === 0) {
+      setError('Username cannot be empty');
       return;
     }
     setLoading(true);
@@ -93,12 +101,19 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
     try {
       let finalAvatarUrl = avatarUrl;
 
+      const token = localStorage.getItem('vibe_token');
+
       if (avatarFile) {
         const formData = new FormData();
         formData.append('file', avatarFile);
+
+        const uploadHeaders: HeadersInit = {};
+        if (token) uploadHeaders['Authorization'] = `Bearer ${token}`;
+
         const uploadRes = await fetch(`${API_URL}/uploads/avatar`, {
           method: 'POST',
           body: formData,
+          headers: uploadHeaders,
           credentials: 'include'
         });
         if (uploadRes.ok) {
@@ -107,9 +122,14 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
         }
       }
 
+      const profileHeaders: HeadersInit = {
+        'Content-Type': 'application/json'
+      };
+      if (token) profileHeaders['Authorization'] = `Bearer ${token}`;
+
       const res = await fetch(`${API_URL}/auth/profile`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: profileHeaders,
         credentials: 'include',
         body: JSON.stringify({
           full_name: name,
@@ -127,7 +147,12 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
         setTimeout(() => onClose(), 800);
       } else {
         const data = await res.json();
-        setError(data.detail || 'Failed to update profile');
+        const detail = data.detail;
+        if (Array.isArray(detail)) {
+          setError(detail[0]?.msg || 'Validation error');
+        } else {
+          setError(typeof detail === 'string' ? detail : 'Failed to update profile');
+        }
       }
     } catch {
       setError('Network error. Please try again.');
@@ -285,11 +310,10 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
                     key={tab.key}
                     type="button"
                     onClick={() => setActiveSection(tab.key)}
-                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all duration-300 ${
-                      activeSection === tab.key
-                        ? 'bg-neon text-black shadow-lg shadow-neon/20'
-                        : 'text-content-muted hover:text-content hover:bg-line/30'
-                    }`}
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all duration-300 ${activeSection === tab.key
+                      ? 'bg-neon text-black shadow-lg shadow-neon/20'
+                      : 'text-content-muted hover:text-content hover:bg-line/30'
+                      }`}
                   >
                     {tab.icon}
                     <span>{tab.label}</span>
@@ -411,11 +435,10 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
                         </svg>
                         Full Name
                       </label>
-                      <div className={`relative rounded-xl border transition-all duration-300 ${
-                        focusedField === 'name'
-                          ? 'border-neon/50 shadow-[0_0_0_3px_var(--color-neon-subtle)]'
-                          : 'border-line hover:border-content-muted/30'
-                      }`}>
+                      <div className={`relative rounded-xl border transition-all duration-300 ${focusedField === 'name'
+                        ? 'border-neon/50 shadow-[0_0_0_3px_var(--color-neon-subtle)]'
+                        : 'border-line hover:border-content-muted/30'
+                        }`}>
                         <input
                           ref={nameRef}
                           value={name}
@@ -437,11 +460,10 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
                         </svg>
                         Username
                       </label>
-                      <div className={`relative rounded-xl border transition-all duration-300 ${
-                        focusedField === 'handle'
-                          ? 'border-neon/50 shadow-[0_0_0_3px_var(--color-neon-subtle)]'
-                          : 'border-line hover:border-content-muted/30'
-                      }`}>
+                      <div className={`relative rounded-xl border transition-all duration-300 ${focusedField === 'handle'
+                        ? 'border-neon/50 shadow-[0_0_0_3px_var(--color-neon-subtle)]'
+                        : 'border-line hover:border-content-muted/30'
+                        }`}>
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neon text-sm font-medium">@</span>
                         <input
                           value={handle}
@@ -473,11 +495,10 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
                           {bio.length}/{MAX_BIO}
                         </span>
                       </div>
-                      <div className={`relative rounded-xl border transition-all duration-300 ${
-                        focusedField === 'bio'
-                          ? 'border-neon/50 shadow-[0_0_0_3px_var(--color-neon-subtle)]'
-                          : 'border-line hover:border-content-muted/30'
-                      }`}>
+                      <div className={`relative rounded-xl border transition-all duration-300 ${focusedField === 'bio'
+                        ? 'border-neon/50 shadow-[0_0_0_3px_var(--color-neon-subtle)]'
+                        : 'border-line hover:border-content-muted/30'
+                        }`}>
                         <textarea
                           value={bio}
                           onChange={e => setBio(e.target.value)}
@@ -486,14 +507,14 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
                           className="w-full px-4 py-3 bg-background rounded-xl text-sm text-content placeholder:text-content-muted/40 focus:outline-none resize-none h-24"
                           placeholder="Tell the world about yourself..."
                           maxLength={MAX_BIO + 10}
+                          dir="auto"
                         />
                       </div>
                       {/* Bio progress bar */}
                       <div className="h-1 rounded-full bg-line overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-300 ${
-                            bio.length > MAX_BIO ? 'bg-red-400' : bio.length > MAX_BIO * 0.8 ? 'bg-yellow-400' : 'bg-neon'
-                          }`}
+                          className={`h-full rounded-full transition-all duration-300 ${bio.length > MAX_BIO ? 'bg-red-400' : bio.length > MAX_BIO * 0.8 ? 'bg-yellow-400' : 'bg-neon'
+                            }`}
                           style={{ width: `${Math.min((bio.length / MAX_BIO) * 100, 100)}%` }}
                         />
                       </div>
@@ -520,11 +541,10 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
                         </svg>
                         Location
                       </label>
-                      <div className={`relative rounded-xl border transition-all duration-300 ${
-                        focusedField === 'location'
-                          ? 'border-neon/50 shadow-[0_0_0_3px_var(--color-neon-subtle)]'
-                          : 'border-line hover:border-content-muted/30'
-                      }`}>
+                      <div className={`relative rounded-xl border transition-all duration-300 ${focusedField === 'location'
+                        ? 'border-neon/50 shadow-[0_0_0_3px_var(--color-neon-subtle)]'
+                        : 'border-line hover:border-content-muted/30'
+                        }`}>
                         <input
                           value={location}
                           onChange={e => setLocation(e.target.value)}
@@ -544,11 +564,10 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
                         </svg>
                         Website
                       </label>
-                      <div className={`relative rounded-xl border transition-all duration-300 ${
-                        focusedField === 'website'
-                          ? 'border-neon/50 shadow-[0_0_0_3px_var(--color-neon-subtle)]'
-                          : 'border-line hover:border-content-muted/30'
-                      }`}>
+                      <div className={`relative rounded-xl border transition-all duration-300 ${focusedField === 'website'
+                        ? 'border-neon/50 shadow-[0_0_0_3px_var(--color-neon-subtle)]'
+                        : 'border-line hover:border-content-muted/30'
+                        }`}>
                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-content-muted">
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -612,7 +631,7 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
                         </div>
                       </div>
                       {bio && (
-                        <p className="text-xs text-content-muted mt-3 leading-relaxed">{bio}</p>
+                        <p className="text-xs text-content-muted mt-3 leading-relaxed" dir="auto">{bio}</p>
                       )}
                     </div>
                   </motion.div>
@@ -673,7 +692,12 @@ export function EditProfileModal({ isOpen, onClose, user, onUpdate }: EditProfil
                   </button>
                   <button
                     onClick={handleSubmit}
-                    disabled={loading || !hasChanges}
+                    disabled={
+                      loading ||
+                      !hasChanges ||
+                      handle.trim().length === 0 ||
+                      (handle !== user.handle.replace('@', '') && handle.trim().length < 3)
+                    }
                     className="px-6 py-2.5 rounded-xl bg-neon text-black font-bold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-neon/25 active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center gap-2"
                   >
                     {loading ? (

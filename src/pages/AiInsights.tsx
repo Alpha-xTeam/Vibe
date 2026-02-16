@@ -36,7 +36,7 @@ export function AiInsights() {
 
   useEffect(() => {
     if (activeView === 'vibe-check' && !vibeResult && !analyzing) {
-        handleVibeCheck();
+      handleVibeCheck();
     }
   }, [activeView]);
 
@@ -98,7 +98,7 @@ export function AiInsights() {
           <div className="flex items-center justify-between mb-3">
             <div className="w-10 h-10 rounded-xl bg-rose-400/10 flex items-center justify-center group-hover:scale-110 transition-transform">
               <svg className="w-5 h-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h3.25l1.5 4.75l4 -12.5l3.25 11l2 -3.25h3" />
               </svg>
             </div>
             <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -186,11 +186,10 @@ export function AiInsights() {
           <button
             key={tab.key}
             onClick={() => setActiveView(tab.key)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all duration-300 whitespace-nowrap ${
-              activeView === tab.key
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all duration-300 whitespace-nowrap ${activeView === tab.key
                 ? 'bg-neon text-black shadow-lg shadow-neon/20'
                 : 'text-content-muted hover:text-content hover:bg-neon/5'
-            }`}
+              }`}
           >
             {tab.icon}
             <span className="hidden sm:inline">{tab.label}</span>
@@ -262,7 +261,7 @@ export function AiInsights() {
                     <div className="flex items-center gap-4 mt-3">
                       <span className="flex items-center gap-1.5 text-xs text-content-muted">
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h3.25l1.5 4.75l4 -12.5l3.25 11l2 -3.25h3" />
                         </svg>
                         {p.likes || 0}
                       </span>
@@ -366,71 +365,71 @@ export function AiInsights() {
       {activeView === 'vibe-check' && (
         <div className="space-y-6">
           <div className="rounded-2xl border border-line bg-surface p-8 text-center relative overflow-hidden">
-             {/* Background Pattern */}
-             <div className="absolute inset-0 opacity-5 pointer-events-none">
-                <div className="absolute inset-0" style={{backgroundImage: 'radial-gradient(circle at 2px 2px, var(--color-neon) 1px, transparent 0)', backgroundSize: '24px 24px'}} />
-             </div>
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-5 pointer-events-none">
+              <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, var(--color-neon) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+            </div>
 
-             {analyzing ? (
-                <div className="relative z-10 py-12">
-                   <div className="w-20 h-20 border-4 border-neon border-t-transparent rounded-full animate-spin mx-auto mb-6" />
-                   <h2 className="text-2xl font-bold text-content animate-pulse">Analyzing your Vibe...</h2>
-                   <p className="text-content-muted mt-2">Connecting to Neural Engine...</p>
+            {analyzing ? (
+              <div className="relative z-10 py-12">
+                <div className="w-20 h-20 border-4 border-neon border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+                <h2 className="text-2xl font-bold text-content animate-pulse">Analyzing your Vibe...</h2>
+                <p className="text-content-muted mt-2">Connecting to Neural Engine...</p>
+              </div>
+            ) : vibeResult ? (
+              <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neon/10 border border-neon/20 text-neon text-xs font-bold uppercase tracking-widest mb-6">
+                  AI Vibe Analysis Complete
                 </div>
-             ) : vibeResult ? (
-                <div className="relative z-10">
-                   <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neon/10 border border-neon/20 text-neon text-xs font-bold uppercase tracking-widest mb-6">
-                      AI Vibe Analysis Complete
-                   </div>
-                   
-                   <div className="max-w-2xl mx-auto">
-                      <h2 className="text-4xl font-black text-content tracking-tighter mb-4 italic">"{vibeResult.description}"</h2>
-                      
-                      {/* Score Gauge */}
-                      <div className="flex flex-col items-center mb-8">
-                         <div className="relative w-32 h-32 flex items-center justify-center">
-                            <svg className="w-full h-full -rotate-90">
-                               <circle cx="64" cy="64" r="58" fill="none" stroke="currentColor" strokeWidth="8" className="text-line"/>
-                               <circle cx="64" cy="64" r="58" fill="none" stroke="currentColor" strokeWidth="8" className="text-neon" strokeDasharray={2 * Math.PI * 58} strokeDashoffset={2 * Math.PI * 58 * (1 - vibeResult.score / 100)}/>
-                            </svg>
-                            <div className="absolute inset-0 flex flex-col items-center justify-center">
-                               <span className="text-3xl font-black text-content">{vibeResult.score}</span>
-                               <span className="text-[10px] text-content-muted font-bold tracking-widest uppercase">Energy</span>
-                            </div>
-                         </div>
-                      </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                         {vibeResult.keywords?.map((k: string) => (
-                            <div key={k} className="px-4 py-3 rounded-2xl bg-background border border-line text-sm font-bold text-content shadow-sm">
-                               #{k}
-                            </div>
-                         ))}
-                      </div>
+                <div className="max-w-2xl mx-auto">
+                  <h2 className="text-4xl font-black text-content tracking-tighter mb-4 italic">"{vibeResult.description}"</h2>
 
-                      <div className="p-6 rounded-2xl bg-neon/5 border border-neon/20 text-left">
-                         <h3 className="text-xs font-bold text-neon uppercase tracking-widest mb-2 flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                            AI Advice
-                         </h3>
-                         <p className="text-content-muted leading-relaxed italic">{vibeResult.advice}</p>
+                  {/* Score Gauge */}
+                  <div className="flex flex-col items-center mb-8">
+                    <div className="relative w-32 h-32 flex items-center justify-center">
+                      <svg className="w-full h-full -rotate-90">
+                        <circle cx="64" cy="64" r="58" fill="none" stroke="currentColor" strokeWidth="8" className="text-line" />
+                        <circle cx="64" cy="64" r="58" fill="none" stroke="currentColor" strokeWidth="8" className="text-neon" strokeDasharray={2 * Math.PI * 58} strokeDashoffset={2 * Math.PI * 58 * (1 - vibeResult.score / 100)} />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-3xl font-black text-content">{vibeResult.score}</span>
+                        <span className="text-[10px] text-content-muted font-bold tracking-widest uppercase">Energy</span>
                       </div>
+                    </div>
+                  </div>
 
-                      <button onClick={handleVibeCheck} className="mt-8 text-xs font-bold text-content-muted hover:text-neon transition-colors flex items-center gap-2 mx-auto">
-                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                         Re-Analyze
-                      </button>
-                   </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                    {vibeResult.keywords?.map((k: string) => (
+                      <div key={k} className="px-4 py-3 rounded-2xl bg-background border border-line text-sm font-bold text-content shadow-sm">
+                        #{k}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="p-6 rounded-2xl bg-neon/5 border border-neon/20 text-left">
+                    <h3 className="text-xs font-bold text-neon uppercase tracking-widest mb-2 flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                      AI Advice
+                    </h3>
+                    <p className="text-content-muted leading-relaxed italic">{vibeResult.advice}</p>
+                  </div>
+
+                  <button onClick={handleVibeCheck} className="mt-8 text-xs font-bold text-content-muted hover:text-neon transition-colors flex items-center gap-2 mx-auto">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    Re-Analyze
+                  </button>
                 </div>
-             ) : (
-                <div className="relative z-10 py-12">
-                   <h2 className="text-2xl font-bold text-content mb-4">Discover your AI Identity</h2>
-                   <p className="text-content-muted max-w-sm mx-auto mb-8">We'll analyze your latest posts to determine your overall energy and personality on Vibe.</p>
-                   <button onClick={handleVibeCheck} className="px-8 py-4 bg-neon text-black font-black rounded-2xl hover:shadow-2xl hover:shadow-neon/20 transition-all transform active:scale-95">
-                      START ANALYSIS
-                   </button>
-                </div>
-             )}
+              </div>
+            ) : (
+              <div className="relative z-10 py-12">
+                <h2 className="text-2xl font-bold text-content mb-4">Discover your AI Identity</h2>
+                <p className="text-content-muted max-w-sm mx-auto mb-8">We'll analyze your latest posts to determine your overall energy and personality on Vibe.</p>
+                <button onClick={handleVibeCheck} className="px-8 py-4 bg-neon text-black font-black rounded-2xl hover:shadow-2xl hover:shadow-neon/20 transition-all transform active:scale-95">
+                  START ANALYSIS
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -507,26 +506,34 @@ export function AiInsights() {
               </h3>
               <div className="space-y-4">
                 {[
-                  { label: 'Posts Today', value: '24', change: '+12%', icon: (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  )},
-                  { label: 'Interactions', value: '156', change: '+8%', icon: (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                  )},
-                  { label: 'New Followers', value: '42', change: '+23%', icon: (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                    </svg>
-                  )},
-                  { label: 'Avg Response', value: '1.2s', change: '-15%', icon: (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  )},
+                  {
+                    label: 'Posts Today', value: '24', change: '+12%', icon: (
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    )
+                  },
+                  {
+                    label: 'Interactions', value: '156', change: '+8%', icon: (
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                    )
+                  },
+                  {
+                    label: 'New Followers', value: '42', change: '+23%', icon: (
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                      </svg>
+                    )
+                  },
+                  {
+                    label: 'Avg Response', value: '1.2s', change: '-15%', icon: (
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    )
+                  },
                 ].map(item => (
                   <div key={item.label} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-neon/5 transition-all">
                     <div className="w-9 h-9 rounded-lg bg-neon/10 flex items-center justify-center text-neon shrink-0">

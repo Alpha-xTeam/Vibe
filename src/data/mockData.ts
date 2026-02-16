@@ -4,6 +4,7 @@ export interface User {
   handle: string;
   avatar: string;
   isAI?: boolean;
+  isVerified?: boolean;
 }
 
 export interface Post {
@@ -13,6 +14,7 @@ export interface Post {
   timestamp: string;
   likes: number;
   comments: number;
+  reposts: number;
   shares: number;
   image?: string;
   codeSnippet?: {
@@ -21,6 +23,8 @@ export interface Post {
   };
   isAIPost?: boolean;
   aiStatus?: 'analyzing' | 'generating' | 'optimizing' | null;
+  hasLiked?: boolean;
+  hasReposted?: boolean;
 }
 
 export interface TrendingTopic {

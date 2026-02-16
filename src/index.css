@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* ═══ Dark mode: use .dark class, NOT system preference ═══ */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ============================================
    🎨 VIBE DESIGN SYSTEM
    اللون الأخضر النيون موحد في الوضعين
